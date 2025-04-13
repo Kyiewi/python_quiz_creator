@@ -41,16 +41,41 @@ pygame.mixer.music.play(-1) #loop background music
 def asset_test():
     running = True
     clock = pygame.time.Clock()
+    start_frame = 0
+    loading_frame = 0
+    start_loops = 0
+    max_start_loops = 4 #times to loop start_images
+
+    showing_start = True
+    showing_loading = False
 
     while running:
-        screen.blit(quiz_template, (0, 0)) #show background image
+        #screen.blit(quiz_template, (0, 0)) #show background image
 
         for event in pygame.event.get():
             if event.type == QUIT:
                 running = False
 
+        screen.fill((0, 0, 0))
+
+        if showing_start:
+            screen.blit(start_images[start_frame], (0, 0))
+            start_frame += 1
+            if start_frame >= len(start_images):
+                start_frame = 0
+                start_loops += 1
+                if start_loops >= max_start_loops:
+                    showing_start = False
+                    showing_loading = True
+        elif showing_loading:
+            if loading_frame < len(loading_images):
+                screen.blit(loading_images[loading_frame], (0, 0))
+                loading_frame += 1
+            else:
+                running = False #close after animation
+
         pygame.display.flip()
-        clock.tick(60)
+        clock.tick(20)
 
     pygame.quit()
     sys.exit()
