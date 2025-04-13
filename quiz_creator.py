@@ -43,41 +43,51 @@ def asset_test():
     clock = pygame.time.Clock()
     start_frame = 0
     loading_frame = 0
-    start_loops = 0
-    max_start_loops = 4 #times to loop start_images
 
     showing_start = True
     showing_loading = False
+    showing_quiz = False
+
+    #draw start button (test)
+    start_button = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2+100, 200, 50)
 
     while running:
-        #screen.blit(quiz_template, (0, 0)) #show background image
 
         for event in pygame.event.get():
             if event.type == QUIT:
                 running = False
+            #to detect click button
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if showing_start and start_button.collidepoint(event.pos):
+                    click_sound.play() #play sound upon detection
+                    showing_start = False
+                    showing_loading = True
+                    loading_frame = 0 #reset loading animation
 
         screen.fill((0, 0, 0))
 
         if showing_start:
             screen.blit(start_images[start_frame], (0, 0))
+            pygame.draw.rect(screen,(255 , 255, 255), start_button, border_radius=12)
+            screen.blit(font.render("START", True, (0, 0, 0)), (start_button.x + 45, start_button.y +10))
             pygame.time.delay(80) #to delay start images a lil bit
-            start_frame += 1
-            if start_frame >= len(start_images):
-                start_frame = 0
-                start_loops += 1
-                if start_loops >= max_start_loops:
-                    showing_start = False
-                    showing_loading = True
+
+            start_frame = (start_frame +1) %len(start_images)
+
         elif showing_loading:
             if loading_frame < len(loading_images):
                 screen.blit(loading_images[loading_frame], (0, 0))
                 pygame.time.delay(120) #to delay loading images since it's too fast
                 loading_frame += 1
             else:
-                running = False #close after animation
+                showing_loading = False #close after animation
+                showing_quiz = True
+
+        elif showing_quiz:
+            screen.blit(quiz_template, (0, 0)) #show background image
 
         pygame.display.flip()
-        clock.tick(20)
+        clock.tick(15)
 
     pygame.quit()
     sys.exit()
