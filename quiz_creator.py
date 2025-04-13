@@ -60,6 +60,7 @@ def asset_test():
 
         if showing_start:
             screen.blit(start_images[start_frame], (0, 0))
+            pygame.time.delay(80) #to delay start images a lil bit
             start_frame += 1
             if start_frame >= len(start_images):
                 start_frame = 0
@@ -70,6 +71,7 @@ def asset_test():
         elif showing_loading:
             if loading_frame < len(loading_images):
                 screen.blit(loading_images[loading_frame], (0, 0))
+                pygame.time.delay(120) #to delay loading images since it's too fast
                 loading_frame += 1
             else:
                 running = False #close after animation
