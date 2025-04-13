@@ -1,8 +1,7 @@
 #Import necessary modules
 import sys
 import pygame
-import pygame.locals import
-from pyrect import WIDTH *
+from pygame.locals import *
 
 #initialize pygame and mixer(for sound)
 pygame.init()
@@ -14,8 +13,8 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Quiz Creator")
 
 #Font
-font = pygame.font.Sysfont("Courier, 40")
-small_font = pygame.font.Sysfont("Courier, 30")
+font = pygame.font.SysFont("Courier, 40")
+small_font = pygame.font.SysFont("Courier, 30")
 
 #For easier load and scale images
 def load_and_scale(path):
@@ -29,11 +28,11 @@ sad_image = load_and_scale('ASSET/sad.png')
 exit_image = load_and_scale('ASSET/Exit.png')
 
 #Load animations
-start_images = [load_and_scale(f'ASSET/START/start ({num}.png)')for num in range(1, 13)]
+start_images = [load_and_scale(f'ASSET/START/start ({num}).png)')for num in range(1, 13)]
 loading_images = [load_and_scale(f'ASSET/LOADING/loading ({num}.png)')for num in range(1, 23)]
 
 #Load sounds
-click_sound = pygame.mixer.sound('SOUNDS/click.mp3')
+click_sound = pygame.mixer.Sound('SOUNDS/click.mp3')
 pygame.mixer.music.load('SOUNDS/background music.mp3')
-pygame.mixer.play(-1) #loop background music
+pygame.mixer.music.play(-1) #loop background music
 
