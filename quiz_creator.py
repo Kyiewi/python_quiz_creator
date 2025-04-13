@@ -12,3 +12,12 @@ pygame.mixer.init()
 WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Quiz Creator")
+
+#Font
+font = pygame.font.Sysfont("Courier, 40")
+small_font = pygame.font.Sysfont("Courier, 30")
+
+#For easier load and scale images
+def load_and_scale(path):
+    return pygame.transform.scale(pygame.image.load(path), (WIDTH, HEIGHT))
+
