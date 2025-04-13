@@ -13,8 +13,8 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Quiz Creator")
 
 #Font
-font = pygame.font.SysFont("Courier, 40")
-small_font = pygame.font.SysFont("Courier, 30")
+font = pygame.font.SysFont("Courier", 40)
+small_font = pygame.font.SysFont("Courier", 30)
 
 #For easier load and scale images
 def load_and_scale(path):
@@ -35,4 +35,5 @@ loading_images = [load_and_scale(f'ASSET/LOADING/loading ({num}.png)')for num in
 click_sound = pygame.mixer.Sound('SOUNDS/click.mp3')
 pygame.mixer.music.load('SOUNDS/background music.mp3')
 pygame.mixer.music.play(-1) #loop background music
+
 
