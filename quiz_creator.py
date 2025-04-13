@@ -36,4 +36,23 @@ click_sound = pygame.mixer.Sound('SOUNDS/click.mp3')
 pygame.mixer.music.load('SOUNDS/background music.mp3')
 pygame.mixer.music.play(-1) #loop background music
 
+#Loop to test asset loading
 
+def asset_test():
+    running = True
+    clock = pygame.time.Clock()
+
+    while running:
+        screen.blit(quiz_template, (0, 0)) #show background image
+
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                running = False
+
+        pygame.display.flip()
+        clock.tick(60)
+
+    pygame.quit()
+    sys.exit()
+
+asset_test()
