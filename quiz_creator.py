@@ -21,3 +21,19 @@ small_font = pygame.font.Sysfont("Courier, 30")
 def load_and_scale(path):
     return pygame.transform.scale(pygame.image.load(path), (WIDTH, HEIGHT))
 
+#-------ASSETS--------
+
+#Load Background images
+quiz_template = load_and_scale('ASSET/quiz_template.png')
+sad_image = load_and_scale('ASSET/sad.png')
+exit_image = load_and_scale('ASSET/Exit.png')
+
+#Load animations
+start_images = [load_and_scale(f'ASSET/START/start ({num}.png)')for num in range(1, 13)]
+loading_images = [load_and_scale(f'ASSET/LOADING/loading ({num}.png)')for num in range(1, 23)]
+
+#Load sounds
+click_sound = pygame.mixer.sound('SOUNDS/click.mp3')
+pygame.mixer.music.load('SOUNDS/background music.mp3')
+pygame.mixer.play(-1) #loop background music
+
