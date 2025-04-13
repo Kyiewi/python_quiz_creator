@@ -28,8 +28,8 @@ sad_image = load_and_scale('ASSET/sad.png')
 exit_image = load_and_scale('ASSET/Exit.png')
 
 #Load animations
-start_images = [load_and_scale(f'ASSET/START/start ({num}).png)')for num in range(1, 13)]
-loading_images = [load_and_scale(f'ASSET/LOADING/loading ({num}.png)')for num in range(1, 23)]
+start_images = [load_and_scale(f'ASSET/START/start ({num}).png')for num in range(1, 13)]
+loading_images = [load_and_scale(f'ASSET/LOADING/loading ({num}).png')for num in range(1, 23)]
 
 #Load sounds
 click_sound = pygame.mixer.Sound('SOUNDS/click.mp3')
