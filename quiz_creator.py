@@ -14,8 +14,8 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Quiz Creator")
 
 #Font
-font = pygame.font.SysFont("Courier", 40)
-small_font = pygame.font.SysFont("Courier", 30)
+font = pygame.font.SysFont("Courier", 30)
+small_font = pygame.font.SysFont("Courier", 20)
 
 #Color
 WHITE = (225, 225, 225)
@@ -44,13 +44,14 @@ pygame.mixer.music.play(-1) #loop background music
 #---------------INPUTBOX CLASS--------------
 
 class InputBox:
-    def __init__(self, x, y, w, h, text=''):
+    def __init__(self, x, y, w, h, text='', dynamic_width=True):
         #rectangle area for input box
         self.rect = pygame.Rect(x, y, w, h)
         self.color = WHITE
         self.text = text
         self.txt_surface = font.render(text, True, WHITE)
         self.active = False
+        self.dynamic_width = dynamic_width
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -70,12 +71,12 @@ class InputBox:
             else:
                 #add typed character
                 self.text += event.unicode
-            self.text = font.render(self.text, True, WHITE) #re-render the updated text in white
+            self.txt_surface = font.render(self.text, True, WHITE) #re-render the updated text in white
 
     def update(self):
-        #adjust width of the box based on text length
-        width = max(200, self.txt_surface.get_width()+10)
-        self.rect.w = width
+        #remove or adjust forced minimum width
+        if self.dynamic_width:
+            self.rect.w = self.txt_surface.get_width() + 200
 
     def draw(self, screen):
         pygame.draw.rect(screen, self.color, self.rect, width=2, border_radius=5) #border of input
@@ -87,22 +88,22 @@ class InputBox:
 
 #input boxes fields for quiz data
 boxes = [
-    InputBox(100, 200, 200, 32), # Question number
-    InputBox(200, 200, 200, 32), # Question text
-    InputBox(300, 200, 200, 32), # Choice A
-    InputBox(400, 200, 200, 32), # Choice B
-    InputBox(500, 200, 200, 32), # Choice C
-    InputBox(600, 200, 200, 32), # Choice D
-    InputBox(700, 200, 200, 32), # Correct answer
+    InputBox(72, 61, 40, 40, dynamic_width=False), # Question number
+    InputBox(136, 66, 200, 40), # Question text
+    InputBox(214, 165, 200, 40), # Choice A
+    InputBox(220, 267, 200, 40), # Choice B
+    InputBox(495, 164, 200, 40), # Choice C
+    InputBox(499, 267, 200, 40), # Choice D
+    InputBox(427, 368, 80, 40, dynamic_width=False), # Correct answer
 
 ]
 
 # -----------------BUTTONS--------------------
-start_button = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 + 100, 200, 50)
-enter_button = pygame.Rect(WIDTH // 4 - 75, HEIGHT - 100, 150, 50)
-quit_button = pygame.Rect(WIDTH * 3 // 4 - 75, HEIGHT - 100, 150, 50)
-yes_button = pygame.Rect(WIDTH // 4 - 75, HEIGHT - 100, 150, 50)
-no_button = pygame.Rect(WIDTH * 3 // 4 - 75, HEIGHT - 100, 150, 50)
+start_button = pygame.Rect(319, 320, 200, 50)
+enter_button = pygame.Rect(201, 470, 150, 50)
+quit_button = pygame.Rect(500, 470, 150, 50)
+yes_button = pygame.Rect(152, 371, 190, 65)
+no_button = pygame.Rect(494, 371, 190, 65)
 
 #Flags
 saved_message = ''
