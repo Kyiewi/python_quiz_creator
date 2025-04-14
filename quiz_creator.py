@@ -49,7 +49,7 @@ class InputBox:
         self.rect = pygame.Rect(x, y, w, h)
         self.color = WHITE
         self.text = text
-        self.txt.surface = font.render(text, True, WHITE)
+        self.txt_surface = font.render(text, True, WHITE)
         self.active = False
 
     def handle_event(self, event):
@@ -74,12 +74,12 @@ class InputBox:
 
     def update(self):
         #adjust width of the box based on text length
-        width = max(200, self.text_surface.get_width()+10)
+        width = max(200, self.txt_surface.get_width()+10)
         self.rect.w = width
 
     def draw(self, screen):
-        pygrame.draw.rect(screen, self.color, width=2, border_radius=5) #border of input
-        screen.blit(self.text_surface, (self.rect.x + 5, self.rect.y +5)) #text surface
+        pygame.draw.rect(screen, self.color, self.rect, width=2, border_radius=5) #border of input
+        screen.blit(self.txt_surface, (self.rect.x + 5, self.rect.y +5)) #text surface
 
     def clear(self):
         self.text = '' #clear input box text
@@ -87,13 +87,13 @@ class InputBox:
 
 #input boxes fields for quiz data
 boxes = [
-    InputBox(100, 200, 200, 32) # Question number
-    InputBox(200, 200, 200, 32) # Question text
-    InputBox(300, 200, 200, 32) # Choice A
-    InputBox(400, 200, 200, 32) # Choice B
-    InputBox(500, 200, 200, 32) # Choice C
-    InputBox(600, 200, 200, 32) # Choice D
-    InputBox(700, 200, 200, 32) # Correct answer
+    InputBox(100, 200, 200, 32), # Question number
+    InputBox(200, 200, 200, 32), # Question text
+    InputBox(300, 200, 200, 32), # Choice A
+    InputBox(400, 200, 200, 32), # Choice B
+    InputBox(500, 200, 200, 32), # Choice C
+    InputBox(600, 200, 200, 32), # Choice D
+    InputBox(700, 200, 200, 32), # Correct answer
 
 ]
 
@@ -107,6 +107,7 @@ no_button = pygame.Rect(WIDTH * 3 // 4 - 75, HEIGHT - 100, 150, 50)
 #Flags
 saved_message = ''
 save_counter = 0
+showing_start = True
 showing_loading = False
 showing_quiz = False
 showing_exit_confirm = False
@@ -120,7 +121,7 @@ def main():
     start_frame = 0
     loading_frame = 0
 
-    global showing_start, showing_loading, showing_exit_confirm, showing_sad, saved_message, save_counter
+    global showing_start, showing_loading, showing_quiz, showing_exit_confirm, showing_sad, saved_message, save_counter
 
     while running:
 
@@ -139,7 +140,7 @@ def main():
                     if enter_button.collidepoint(event.pos):
                         click_sound.play()
                         #to record user input and output it as a txt file
-                        with.open('quiz_data.txt', 'a') as f:
+                        with open('quiz_data.txt', 'a') as f:
                             f.write(f"Number:{boxes[0],text}\n")
                             f.write(f"Question:{boxes[0], text}\n")
                             f.write(f"A:{boxes[0], text}\n")
