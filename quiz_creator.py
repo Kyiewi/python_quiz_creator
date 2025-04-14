@@ -14,7 +14,7 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Quiz Creator")
 
 #Font
-font = pygame.font.SysFont("Courier", 30)
+font = pygame.font.SysFont("Courier", 25)
 small_font = pygame.font.SysFont("Courier", 20)
 
 #Color
@@ -76,7 +76,7 @@ class InputBox:
     def update(self):
         #remove or adjust forced minimum width
         if self.dynamic_width:
-            self.rect.w = self.txt_surface.get_width() + 200
+            self.rect.w = self.txt_surface.get_width() + 10
 
     def draw(self, screen):
         pygame.draw.rect(screen, self.color, self.rect, width=2, border_radius=5) #border of input
@@ -131,7 +131,6 @@ def main():
                 running = False
             #to detect click button
             if event.type == pygame.MOUSEBUTTONDOWN:
-                print("Mouse clicked at:", event.pos) # to get coordinates
                 if showing_start and start_button.collidepoint(event.pos):
                     click_sound.play() #play sound upon detection
                     showing_start = False
@@ -144,12 +143,12 @@ def main():
                         #to record user input and output it as a txt file
                         with open('quiz_data.txt', 'a') as f:
                             f.write(f"Number:{boxes[0].text}\n")
-                            f.write(f"Question:{boxes[0].text}\n")
-                            f.write(f"A:{boxes[0].text}\n")
-                            f.write(f"B:{boxes[0].text}\n")
-                            f.write(f"C:{boxes[0].text}\n")
-                            f.write(f"D:{boxes[0].text}\n")
-                            f.write(f"Correct Answer:{boxes[0].text}\n")
+                            f.write(f"Question:{boxes[1].text}\n")
+                            f.write(f"A:{boxes[2].text}\n")
+                            f.write(f"B:{boxes[3].text}\n")
+                            f.write(f"C:{boxes[4].text}\n")
+                            f.write(f"D:{boxes[5].text}\n")
+                            f.write(f"Correct Answer:{boxes[6].text}\n")
                         saved_message = 'Saved!' #save notif for user
                         save_counter = pygame.time.get_ticks()
                         for box in boxes:
@@ -183,8 +182,6 @@ def main():
 
         if showing_start:
             screen.blit(start_images[start_frame], (0, 0))
-            pygame.draw.rect(screen,(255 , 255, 255), start_button, border_radius=12)
-            screen.blit(font.render("START", True, (0, 0, 0)), (start_button.x + 45, start_button.y +10))
             pygame.time.delay(80) #to delay start images a lil bit
             start_frame = (start_frame +1) %len(start_images)
 
@@ -199,13 +196,6 @@ def main():
 
         elif showing_quiz:
             screen.blit(quiz_template, (0, 0)) #show background image
-            # ENTER  BUTTON
-            pygame.draw.rect(screen, (255, 255, 255), enter_button, border_radius=12)
-            screen.blit(font.render("ENTER", True, (0, 0, 0)), (enter_button.x + 45, enter_button.y +10))
-
-            # QUIT BUTTON
-            pygame.draw.rect(screen, (255, 255, 255), quit_button, border_radius=12)
-            screen.blit(font.render("QUIT", True, (0, 0, 0)), (quit_button.x + 45, quit_button.y + 10))
 
             for box in boxes:
                 box.update()
@@ -219,13 +209,6 @@ def main():
 
         elif showing_exit_confirm:
             screen.blit(exit_image, (0, 0))  # show background image
-            # YES BUTTON
-            pygame.draw.rect(screen, (255, 255, 255), yes_button, border_radius=12)
-            screen.blit(font.render("YES", True, (0, 0, 0)), (yes_button.x + 45, yes_button.y + 10))
-
-            # NO BUTTON
-            pygame.draw.rect(screen, (255, 255, 255), no_button, border_radius=12)
-            screen.blit(font.render("NO", True, (0, 0, 0)), (no_button.x + 45, no_button.y + 10))
 
         elif showing_sad:
             screen.blit(sad_image, (0, 0))  # show background image
