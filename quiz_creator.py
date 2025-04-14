@@ -1,6 +1,7 @@
 #Import necessary modules
 import sys
 import pygame
+from pygame.constants import USEREVENT
 from pygame.locals import *
 
 #initialize pygame and mixer(for sound)
@@ -36,9 +37,9 @@ click_sound = pygame.mixer.Sound('SOUNDS/click.mp3')
 pygame.mixer.music.load('SOUNDS/background music.mp3')
 pygame.mixer.music.play(-1) #loop background music
 
-#Loop to test asset loading
+#Main functions
 
-def asset_test():
+def main():
     running = True
     clock = pygame.time.Clock()
     start_frame = 0
@@ -47,9 +48,15 @@ def asset_test():
     showing_start = True
     showing_loading = False
     showing_quiz = False
+    showing_exit_confirm = False
+    showing_sad = False
 
-    #draw start button (test)
+    #-----------------BUTTONS--------------------
     start_button = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2+100, 200, 50)
+    enter_button = pygame.Rect(WIDTH // 4 - 75, HEIGHT - 100, 150, 50)
+    quit_button = pygame.Rect(WIDTH * 3 // 4 - 75, HEIGHT - 100, 150, 50)
+    yes_button = pygame.Rect(WIDTH // 4 - 75, HEIGHT - 100, 150, 50)
+    no_button = pygame.Rect(WIDTH * 3 // 4 - 75, HEIGHT - 100, 150, 50)
 
     while running:
 
@@ -63,6 +70,30 @@ def asset_test():
                     showing_start = False
                     showing_loading = True
                     loading_frame = 0 #reset loading animation
+
+                elif showing_quiz:
+                    if enter_button.collidepoint(event.pos):
+                        click_sound.play()
+                        print("Enter quiz creation...") #placeholder for now
+                    elif quit_button.collidepoint(event.pos):
+                        click_sound.play()
+                        showing_quiz = False
+                        showing_exit_confirm = True
+
+                elif showing_exit_confirm:
+                    if yes_button.collidepoint(event.pos):
+                        click_sound.play()
+                        showing_exit_confirm = False
+                        showing_sad = True
+                        pygame.time.set_timer(USEREVENT + 1, 2000) #show sad image for 2 secs
+                    elif no_button.collidepoint(event.pos):
+                        click_sound.play()
+                        showing_exit_confirm = False
+                        showing_quiz = True
+
+            if event.type == USEREVENT +1:
+                pygame.quit()
+                sys.exit()
 
         screen.fill((0, 0, 0))
 
@@ -85,6 +116,26 @@ def asset_test():
 
         elif showing_quiz:
             screen.blit(quiz_template, (0, 0)) #show background image
+            # ENTER  BUTTON
+            pygame.draw.rect(screen, (255, 255, 255), enter_button, border_radius=12)
+            screen.blit(font.render("ENTER", True, (0, 0, 0)), (enter_button.x + 45, enter_button.y +10))
+
+            # QUIT BUTTON
+            pygame.draw.rect(screen, (255, 255, 255), quit_button, border_radius=12)
+            screen.blit(font.render("QUIT", True, (0, 0, 0)), (quit_button.x + 45, quit_button.y + 10))
+
+        elif showing_exit_confirm:
+            screen.blit(exit_image, (0, 0))  # show background image
+            # YES BUTTON
+            pygame.draw.rect(screen, (255, 255, 255), yes_button, border_radius=12)
+            screen.blit(font.render("YES", True, (0, 0, 0)), (yes_button.x + 45, yes_button.y + 10))
+
+            # NO BUTTON
+            pygame.draw.rect(screen, (255, 255, 255), no_button, border_radius=12)
+            screen.blit(font.render("NO", True, (0, 0, 0)), (no_button.x + 45, no_button.y + 10))
+
+        elif showing_sad:
+            screen.blit(sad_image, (0, 0))  # show background image
 
         pygame.display.flip()
         clock.tick(15)
@@ -92,4 +143,4 @@ def asset_test():
     pygame.quit()
     sys.exit()
 
-asset_test()
+main()
