@@ -9,7 +9,7 @@ pygame.init()
 pygame.mixer.init()
 
 #Setup Display
-WIDTH, HEIGHT = 800, 600
+WIDTH, HEIGHT = 850, 550
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Quiz Creator")
 
@@ -130,6 +130,7 @@ def main():
                 running = False
             #to detect click button
             if event.type == pygame.MOUSEBUTTONDOWN:
+                print("Mouse clicked at:", event.pos) # to get coordinates
                 if showing_start and start_button.collidepoint(event.pos):
                     click_sound.play() #play sound upon detection
                     showing_start = False
@@ -141,13 +142,13 @@ def main():
                         click_sound.play()
                         #to record user input and output it as a txt file
                         with open('quiz_data.txt', 'a') as f:
-                            f.write(f"Number:{boxes[0],text}\n")
-                            f.write(f"Question:{boxes[0], text}\n")
-                            f.write(f"A:{boxes[0], text}\n")
-                            f.write(f"B:{boxes[0], text}\n")
-                            f.write(f"C:{boxes[0], text}\n")
-                            f.write(f"D:{boxes[0], text}\n")
-                            f.write(f"Correct Answer:{boxes[0], text}\n")
+                            f.write(f"Number:{boxes[0].text}\n")
+                            f.write(f"Question:{boxes[0].text}\n")
+                            f.write(f"A:{boxes[0].text}\n")
+                            f.write(f"B:{boxes[0].text}\n")
+                            f.write(f"C:{boxes[0].text}\n")
+                            f.write(f"D:{boxes[0].text}\n")
+                            f.write(f"Correct Answer:{boxes[0].text}\n")
                         saved_message = 'Saved!' #save notif for user
                         save_counter = pygame.time.get_ticks()
                         for box in boxes:
@@ -211,7 +212,7 @@ def main():
 
             if saved_message and pygame.time.get_ticks() - save_counter < 2000:
                 saved_text = small_font.render(saved_message, True, WHITE)
-                screen.blit(saved_text, WIDTH // 2 - saved_text.get_width() // 2, HEIGHT - 50)
+                screen.blit(saved_text, (WIDTH // 2 - saved_text.get_width() // 2, HEIGHT - 50))
             else:
                 saved_message = ''
 
