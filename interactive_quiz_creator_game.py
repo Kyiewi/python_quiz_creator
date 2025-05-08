@@ -105,12 +105,14 @@ no_button            = pygame.Rect(728, 371, 190, 65)
 
 # State flags
 showing_start        = True
-showing_loading      = False
 showing_create       = False
 showing_exit_confirm = False
 showing_sad          = False
 showing_answer       = False
 showing_result       = False
+showing_loading = False
+loading_target = None  # either "create" or "play"
+
 
 saved_msg         = ''
 save_time         = 0
@@ -137,7 +139,7 @@ def draw_back_and_quit():
 
 # Main Loop
 def main():
-    global showing_start, showing_loading, showing_create, showing_exit_confirm
+    global showing_start, showing_loading, loading_target, showing_create, showing_exit_confirm
     global showing_sad, showing_answer, showing_result, timer_set
     global saved_msg, save_time, is_correct, current_question
 
@@ -168,12 +170,18 @@ def main():
                 # Start menu
                 if showing_start:
                     if create_button.collidepoint(event.pos):
-                        click_sound.play(); showing_start=False; showing_loading=True; load_frame=0
+                        click_sound.play()
+                        showing_start = False
+                        showing_loading = True
+                        loading_target = "create"
+                        load_frame = 0
+
                     elif play_button.collidepoint(event.pos):
-                        click_sound.play(); current_question=load_random_question();
-                        for i,line in enumerate(current_question[:6]):
-                            if ':' in line: boxes[i].set_text(line.split(':',1)[1].strip())
-                        answer_input.clear(); showing_start=False; showing_answer=True
+                        click_sound.play()
+                        showing_start = False
+                        showing_loading = True
+                        loading_target = "play"
+                        load_frame = 0
 
                 # Create quiz
                 elif showing_create:
@@ -222,9 +230,30 @@ def main():
             pygame.draw.rect(screen,WHITE,play_button,2); screen.blit(small_font.render("Answer Quiz",True,WHITE),(play_button.x+40,play_button.y+10))
             pygame.time.delay(80); start_frame=(start_frame+1)%len(start_images)
 
+
         elif showing_loading:
-            if load_frame<len(loading_images): screen.blit(loading_images[load_frame],(0,0)); pygame.time.delay(120); load_frame+=1
-            else: showing_loading=False; showing_create=True; [b.clear() for b in boxes]
+            if load_frame < len(loading_images):
+                screen.blit(loading_images[load_frame], (0, 0))
+                pygame.time.delay(120)
+                load_frame += 1
+            else:
+                showing_loading = False
+                if loading_target == "create":
+                    showing_create = True
+                    [b.clear() for b in boxes]
+                elif loading_target == "play":
+                    current_question = load_random_question()
+                    for i, line in enumerate(current_question[:6]):
+                        if ':' in line:
+                            _, val = line.split(':', 1)
+                            boxes[i].set_text(val.strip())
+
+                    answer_input.clear()
+
+                    showing_answer = True
+
+                loading_target = None
+
 
         elif showing_create:
             screen.blit(quiz_template,(0,0))
