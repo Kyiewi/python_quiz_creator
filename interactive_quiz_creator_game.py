@@ -99,9 +99,12 @@ boxes = [
 ]
 
 # -----------------BUTTONS--------------------
-start_button = pygame.Rect(319, 320, 200, 50)
+create_button = pygame.Rect(319, 320, 200, 50)
+play_button = pygame.Rect(319, 320, 200, 50)
 enter_button = pygame.Rect(201, 470, 150, 50)
 quit_button = pygame.Rect(500, 470, 150, 50)
+submit_button = pygame.Rect(201, 470, 150, 50)
+back_button = pygame.Rect(500, 400, 150, 50)
 yes_button = pygame.Rect(152, 371, 190, 65)
 no_button = pygame.Rect(494, 371, 190, 65)
 
