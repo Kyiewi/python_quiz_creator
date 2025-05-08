@@ -24,13 +24,13 @@ def load_and_scale(path):
     return pygame.transform.scale(pygame.image.load(path), (WIDTH, HEIGHT))
 
 # Assets
-quiz_template   = load_and_scale('ASSET 2/quiz_template.png')
-sad_image       = load_and_scale('ASSET/sad.png')
-exit_image      = load_and_scale('ASSET/Exit.png')
-correct_image   = load_and_scale('ASSET/correct.png')
-wrong_image     = load_and_scale('ASSET/wrong.png')
-start_images    = [load_and_scale(f'ASSET 2/START/Start ({num}).png') for num in range(1, 13)]
-loading_images  = [load_and_scale(f'ASSET/LOADING/loading ({num}).png') for num in range(1, 23)]
+quiz_template = load_and_scale('ASSET 2/quiz_template.png')
+sad_image = load_and_scale('ASSET/sad.png')
+exit_image = load_and_scale('ASSET/Exit.png')
+correct_image = load_and_scale('ASSET/correct.png')
+wrong_image = load_and_scale('ASSET/wrong.png')
+start_images = [load_and_scale(f'ASSET 2/START/Start ({num}).png') for num in range(1, 13)]
+loading_images = [load_and_scale(f'ASSET/LOADING/loading ({num}).png') for num in range(1, 23)]
 
 click_sound = pygame.mixer.Sound('SOUNDS/click.mp3')
 pygame.mixer.music.load('SOUNDS/background music.mp3')
@@ -91,34 +91,34 @@ boxes = [
     InputBox(625,287,200,40),                        # D
     InputBox(645,392, 80,40, dynamic_width=False),   # Correct Answer
 ]
+
 answer_input = InputBox(645,392,80,40, dynamic_width=False, editable=True)
 
 # Buttons
-create_button         = pygame.Rect(407, 320, 200, 50)
-play_button          = pygame.Rect(454, 390, 200, 50)
-enter_button         = pygame.Rect(201, 470, 150, 50)
-quit_button          = pygame.Rect(807, 470, 150, 50)
-submit_button        = pygame.Rect(120, 483, 150, 50)
-back_button          = pygame.Rect(469, 476, 150, 50)
-yes_button           = pygame.Rect(152, 371, 190, 65)
-no_button            = pygame.Rect(728, 371, 190, 65)
+create_button = pygame.Rect(407, 320, 200, 50)
+play_button = pygame.Rect(454, 390, 200, 50)
+enter_button = pygame.Rect(201, 470, 150, 50)
+quit_button = pygame.Rect(807, 470, 150, 50)
+submit_button = pygame.Rect(120, 483, 150, 50)
+back_button = pygame.Rect(469, 476, 150, 50)
+yes_button = pygame.Rect(251, 388, 190, 65)
+no_button = pygame.Rect(728, 371, 190, 65)
 
 # State flags
-showing_start        = True
-showing_create       = False
+showing_start = True
+showing_create = False
 showing_exit_confirm = False
-showing_sad          = False
-showing_answer       = False
-showing_result       = False
+showing_sad = False
+showing_answer = False
+showing_result = False
 showing_loading = False
 loading_target = None  # either "create" or "play"
 
-
-saved_msg         = ''
-save_time         = 0
-is_correct        = False
-current_question         = []
-timer_set         = False
+saved_msg = ''
+save_time  = 0
+is_correct = False
+current_question = []
+timer_set = False
 
 # Load a random question from file
 def load_random_question():
@@ -129,13 +129,6 @@ def load_random_question():
             return random.choice(question).splitlines()
     except:
         return []
-
-# Draw Back/Quit buttons on template
-def draw_back_and_quit():
-    pygame.draw.rect(screen, WHITE, back_button, 2)
-    screen.blit(small_font.render("Back", True, WHITE),(back_button.x+40, back_button.y+10))
-    pygame.draw.rect(screen, WHITE, quit_button, 2)
-    screen.blit(small_font.render("Quit", True, WHITE),(quit_button.x+40, quit_button.y+10))
 
 # Main Loop
 def main():
@@ -166,7 +159,6 @@ def main():
                 showing_answer = True
 
             if event.type == MOUSEBUTTONDOWN:
-                print("Mouse clicked at:", event.pos)
                 # Start menu
                 if showing_start:
                     if create_button.collidepoint(event.pos):
@@ -226,10 +218,7 @@ def main():
         screen.fill(BLACK)
         if showing_start:
             screen.blit(start_images[start_frame],(0,0))
-            pygame.draw.rect(screen,WHITE,create_button,2); screen.blit(small_font.render("Create Quiz",True,WHITE),(create_button.x+40,create_button.y+10))
-            pygame.draw.rect(screen,WHITE,play_button,2); screen.blit(small_font.render("Answer Quiz",True,WHITE),(play_button.x+40,play_button.y+10))
             pygame.time.delay(80); start_frame=(start_frame+1)%len(start_images)
-
 
         elif showing_loading:
             if load_frame < len(loading_images):
@@ -247,29 +236,20 @@ def main():
                         if ':' in line:
                             _, val = line.split(':', 1)
                             boxes[i].set_text(val.strip())
-
                     answer_input.clear()
-
                     showing_answer = True
-
                 loading_target = None
-
 
         elif showing_create:
             screen.blit(quiz_template,(0,0))
             for b in boxes: b.update(); b.draw(screen)
             if saved_msg and pygame.time.get_ticks()-save_time<2000: screen.blit(small_font.render(saved_msg,True,WHITE),(WIDTH//2-50,HEIGHT-50))
-            draw_back_and_quit()
-
 
         elif showing_answer:
             screen.blit(quiz_template,(0,0))
             # plain text for question/options
             for i in range(6): screen.blit(boxes[i].txt_surface,(boxes[i].rect.x+5,boxes[i].rect.y+5))
             answer_input.update(); answer_input.draw(screen)
-            pygame.draw.rect(screen,WHITE,submit_button,2); screen.blit(small_font.render("Submit",True,WHITE),(submit_button.x+40,submit_button.y+10))
-            pygame.draw.rect(screen,WHITE,back_button,2); screen.blit(small_font.render("Back",True,WHITE),(back_button.x+40,back_button.y+10))
-            pygame.draw.rect(screen,WHITE,quit_button,2); screen.blit(small_font.render("Quit",True,WHITE),(quit_button.x+40,quit_button.y+10))
 
         elif showing_result:
             screen.blit(correct_image if is_correct else wrong_image,(0,0))
