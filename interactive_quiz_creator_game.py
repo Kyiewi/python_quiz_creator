@@ -108,77 +108,115 @@ back_button = pygame.Rect(500, 400, 150, 50)
 yes_button = pygame.Rect(152, 371, 190, 65)
 no_button = pygame.Rect(494, 371, 190, 65)
 
-#Flags
-saved_message = ''
-save_counter = 0
+# State flags
 showing_start = True
 showing_loading = False
-showing_quiz = False
+showing_create = False
 showing_exit_confirm = False
 showing_sad = False
+showing_answer = False
+showing_result  = False
 
-#Main functions
+saved_msg = ''
+save_time = 0
+is_correct = False
+current_question = []
+timer_set = False
+
+# Load a random question from file
+def load_random_question():
+    try:
+        with open("quiz_data.txt") as f:
+            parts = f.read().strip().split("Number:")
+            question = [p for p in parts if p.strip()]
+            return random.choice(question).splitlines()
+    except:
+        return []
+
+# Draw Back/Quit buttons on template
+def draw_back_and_quit():
+    pygame.draw.rect(screen, WHITE, back_button, 2)
+    screen.blit(small_font.render("Back", True, WHITE),(back_button.x+40, back_button.y+10))
+    pygame.draw.rect(screen, WHITE, quit_button, 2)
+    screen.blit(small_font.render("Quit", True, WHITE),(quit_button.x+40, quit_button.y+10))
+
+# Main Loop
 def main():
-    running = True
+    global showing_start, showing_loading, showing_create, showing_exit_confirm
+    global showing_sad, showing_answer, showing_result, timer_set
+    global saved_msg, save_time, is_correct, current_question
+
     clock = pygame.time.Clock()
-    start_frame = 0
-    loading_frame = 0
+    load_frame = start_frame = 0
 
-    global showing_start, showing_loading, showing_quiz, showing_exit_confirm, showing_sad, saved_message, save_counter
-
-    while running:
-
+    while True:
         for event in pygame.event.get():
             if event.type == QUIT:
-                running = False
-            #to detect click button
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if showing_start and start_button.collidepoint(event.pos):
-                    click_sound.play() #play sound upon detection
-                    showing_start = False
-                    showing_loading = True
-                    loading_frame = 0 #reset loading animation
-
-                elif showing_quiz:
-                    if enter_button.collidepoint(event.pos):
-                        click_sound.play()
-                        #to record user input and output it as a txt file
-                        with open('quiz_data.txt', 'a') as quiz_file:
-                            quiz_file.write(f"Number:{boxes[0].text}\n")
-                            quiz_file.write(f"Question:{boxes[1].text}\n")
-                            quiz_file.write(f"A:{boxes[2].text}\n")
-                            quiz_file.write(f"B:{boxes[3].text}\n")
-                            quiz_file.write(f"C:{boxes[4].text}\n")
-                            quiz_file.write(f"D:{boxes[5].text}\n")
-                            quiz_file.write(f"Correct Answer:{boxes[6].text}\n")
-                        saved_message = 'Saved!' #save notif for user
-                        save_counter = pygame.time.get_ticks()
-                        for box in boxes:
-                            box.clear()
-
-                    elif quit_button.collidepoint(event.pos):
-                        click_sound.play()
-                        showing_quiz = False
-                        showing_exit_confirm = True
-
-                elif showing_exit_confirm:
-                    if yes_button.collidepoint(event.pos):
-                        click_sound.play()
-                        showing_exit_confirm = False
-                        showing_sad = True
-                        pygame.time.set_timer(USEREVENT + 1, 2000) #show sad image for 2 secs
-                    elif no_button.collidepoint(event.pos):
-                        click_sound.play()
-                        showing_exit_confirm = False
-                        showing_quiz = True
-
-            if event.type == USEREVENT +1:
                 pygame.quit()
                 sys.exit()
 
-            if showing_quiz:
-                for box in boxes:
-                    box.handle_event(event)
+            # Auto‑advance after result
+            if event.type == RESULT_TIMER and showing_result:
+                pygame.time.set_timer(RESULT_TIMER, 0)
+                # load next Q and display
+                current_question = load_random_question()
+                for i, line in enumerate(current_question[:6]):
+                    if ':' in line:
+                        _, val = line.split(':',1)
+                        boxes[i].set_text(val.strip())
+                answer_input.clear()
+                showing_result = False
+                showing_answer = True
+
+            if event.type == MOUSEBUTTONDOWN:
+                # Start menu
+                if showing_start:
+                    if create_button.collidepoint(event.pos):
+                        click_sound.play(); showing_start=False; showing_loading=True; load_frame=0
+                    elif play_button.collidepoint(event.pos):
+                        click_sound.play(); current_question=load_random_question();
+                        for i,line in enumerate(current_question[:6]):
+                            if ':' in line: boxes[i].set_text(line.split(':',1)[1].strip())
+                        answer_input.clear(); showing_start=False; showing_answer=True
+
+                # Create quiz
+                elif showing_create:
+                    if enter_button.collidepoint(event.pos):
+                        click_sound.play()
+                        with open("quiz_data.txt","a") as f:
+                            for idx, label in enumerate(["Number", "Question", "A", "B", "C", "D", "Correct Answer"]):
+                                f.write(f"{label}:{boxes[idx].text}\n")
+                        saved_msg="Saved!"; save_time=pygame.time.get_ticks(); [b.clear() for b in boxes]
+                    elif back_button.collidepoint(event.pos):
+                        click_sound.play(); [b.clear() for b in boxes]; showing_create=False; showing_start=True
+                    elif quit_button.collidepoint(event.pos):
+                        click_sound.play(); showing_create=False; showing_exit_confirm=True
+
+                # Answer quiz
+                elif showing_answer:
+                    if submit_button.collidepoint(event.pos):
+                        click_sound.play()
+                        correct=next((ln.split(':',1)[1].strip() for ln in current_question if ln.startswith("Correct Answer:")),"")
+                        is_correct=(answer_input.text.strip().lower()==correct.lower())
+                        showing_answer=False; showing_result=True
+                    elif back_button.collidepoint(event.pos):
+                        click_sound.play(); showing_answer=False; showing_start=True
+                    elif quit_button.collidepoint(event.pos):
+                        click_sound.play(); showing_answer=False; showing_exit_confirm=True
+
+                # Exit confirm
+                elif showing_exit_confirm:
+                    if yes_button.collidepoint(event.pos):
+                        click_sound.play(); showing_exit_confirm=False; showing_sad=True; pygame.time.set_timer(USEREVENT+1,2000)
+                    elif no_button.collidepoint(event.pos):
+                        click_sound.play(); showing_exit_confirm=False; showing_create=True
+
+            if event.type == USEREVENT+1:
+                pygame.quit(); sys.exit()
+
+            # pass events to boxes
+            if showing_create: [b.handle_event(event) for b in boxes]
+            if showing_answer: answer_input.handle_event(event)
 
         screen.fill((0, 0, 0))
 
