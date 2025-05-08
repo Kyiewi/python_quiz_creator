@@ -1,27 +1,25 @@
-#Import necessary modules
 import sys
 import pygame
+import random
 from pygame.constants import USEREVENT
 from pygame.locals import *
 
-#initialize pygame and mixer(for sound)
+# Initialize pygame and mixer
 pygame.init()
 pygame.mixer.init()
 
-#Setup Display
+# Display settings
 WIDTH, HEIGHT = 1060, 550
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Quiz Game")
 
-#Font
+# Fonts & colors
 font = pygame.font.SysFont("Courier", 25)
 small_font = pygame.font.SysFont("Courier", 20)
-
-#Color
 WHITE = (225, 225, 225)
 BLACK = (0, 0, 0)
 
-#For easier load and scale images
+# Helper to load and fit images
 def load_and_scale(path):
     return pygame.transform.scale(pygame.image.load(path), (WIDTH, HEIGHT))
 
@@ -41,87 +39,84 @@ pygame.mixer.music.play(-1)
 # Event for auto-advance after result
 RESULT_TIMER = USEREVENT + 2
 
-#---------------INPUTBOX CLASS--------------
-
+# InputBox class for creation and answer input
 class InputBox:
-    def __init__(self, x, y, w, h, text='', dynamic_width=True):
-        #rectangle area for input box
+    def __init__(self, x, y, w, h, text='', dynamic_width=True, editable=True):
         self.rect = pygame.Rect(x, y, w, h)
         self.color = WHITE
         self.text = text
         self.txt_surface = font.render(text, True, WHITE)
         self.active = False
         self.dynamic_width = dynamic_width
+        self.editable = editable
 
     def handle_event(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            #activate box if clicked inside, otherwise deactivate
+        if not self.editable:
+            return
+        if event.type == MOUSEBUTTONDOWN:
             self.active = self.rect.collidepoint(event.pos)
-            #border
-            self.color = (225, 0, 0) if self.active else WHITE
-
-        #check for key presses when box is active
-        if event.type == pygame.KEYDOWN and self.active:
-            if event.key == pygame.K_RETURN:
-                #deactivate box on enter
+            self.color = (225,0,0) if self.active else WHITE
+        if event.type == KEYDOWN and self.active:
+            if event.key == K_RETURN:
                 self.active = False
-            elif event.key == pygame.K_BACKSPACE:
-                #remove last character
+            elif event.key == K_BACKSPACE:
                 self.text = self.text[:-1]
             else:
-                #add typed character
                 self.text += event.unicode
-            self.txt_surface = font.render(self.text, True, WHITE) #re-render the updated text in white
+            self.txt_surface = font.render(self.text, True, WHITE)
 
     def update(self):
-        #remove or adjust forced minimum width
         if self.dynamic_width:
             self.rect.w = self.txt_surface.get_width() + 10
 
     def draw(self, screen):
-        pygame.draw.rect(screen, self.color, self.rect, width=2, border_radius=5) #border of input
-        screen.blit(self.txt_surface, (self.rect.x + 5, self.rect.y +5)) #text surface
+        pygame.draw.rect(screen, self.color, self.rect, 2, border_radius=5)
+        screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
 
     def clear(self):
-        self.text = '' #clear input box text
-        self.txt_surface = font.render(self.text, True, WHITE)
+        self.text = ''
+        self.txt_surface = font.render('', True, WHITE)
 
-#input boxes fields for quiz data
+    def set_text(self, text):
+        self.text = text
+        self.txt_surface = font.render(text, True, WHITE)
+
+# Boxes for quiz creation and placeholders for loaded question
 boxes = [
-    InputBox(72, 61, 40, 40, dynamic_width=False), # Question number
-    InputBox(136, 66, 200, 40), # Question text
-    InputBox(214, 165, 200, 40), # Choice A
-    InputBox(220, 267, 200, 40), # Choice B
-    InputBox(495, 164, 200, 40), # Choice C
-    InputBox(499, 267, 200, 40), # Choice D
-    InputBox(427, 368, 80, 40, dynamic_width=False), # Correct answer
-
+    InputBox(72,  61, 40, 40, dynamic_width=False),  # Number
+    InputBox(136, 66,200,40),                        # Question
+    InputBox(214,165,200,40),                        # A
+    InputBox(220,267,200,40),                        # B
+    InputBox(495,164,200,40),                        # C
+    InputBox(499,267,200,40),                        # D
+    InputBox(427,368, 80,40, dynamic_width=False),   # Correct Answer
 ]
+answer_input = InputBox(427,368,80,40, dynamic_width=False, editable=True)
 
-# -----------------BUTTONS--------------------
-create_button = pygame.Rect(319, 320, 200, 50)
-play_button = pygame.Rect(319, 320, 200, 50)
-enter_button = pygame.Rect(201, 470, 150, 50)
-quit_button = pygame.Rect(500, 470, 150, 50)
-submit_button = pygame.Rect(201, 470, 150, 50)
-back_button = pygame.Rect(500, 400, 150, 50)
-yes_button = pygame.Rect(152, 371, 190, 65)
-no_button = pygame.Rect(494, 371, 190, 65)
+# Buttons
+create_button         = pygame.Rect(319, 320, 200, 50)
+play_button          = pygame.Rect(319, 390, 200, 50)
+enter_button         = pygame.Rect(201, 470, 150, 50)
+quit_button          = pygame.Rect(500, 470, 150, 50)
+submit_button        = pygame.Rect(201, 470, 150, 50)
+back_button          = pygame.Rect(500, 400, 150, 50)
+yes_button           = pygame.Rect(152, 371, 190, 65)
+no_button            = pygame.Rect(494, 371, 190, 65)
 
 # State flags
-showing_start = True
-showing_loading = False
-showing_create = False
+showing_start        = True
+showing_loading      = False
+showing_create       = False
 showing_exit_confirm = False
-showing_sad = False
-showing_answer = False
-showing_result  = False
+showing_sad          = False
+showing_answer       = False
+showing_result       = False
 
-saved_msg = ''
-save_time = 0
-is_correct = False
-current_question = []
-timer_set = False
+saved_msg         = ''
+save_time         = 0
+is_correct        = False
+current_question         = []
+timer_set         = False
 
 # Load a random question from file
 def load_random_question():
@@ -218,46 +213,44 @@ def main():
             if showing_create: [b.handle_event(event) for b in boxes]
             if showing_answer: answer_input.handle_event(event)
 
-        screen.fill((0, 0, 0))
-
+        # Draw
+        screen.fill(BLACK)
         if showing_start:
-            screen.blit(start_images[start_frame], (0, 0))
-            pygame.time.delay(80) #to delay start images a lil bit
-            start_frame = (start_frame +1) %len(start_images)
+            screen.blit(start_images[start_frame],(0,0))
+            pygame.draw.rect(screen,WHITE,create_button,2); screen.blit(small_font.render("Create Quiz",True,WHITE),(create_button.x+40,create_button.y+10))
+            pygame.draw.rect(screen,WHITE,play_button,2); screen.blit(small_font.render("Answer Quiz",True,WHITE),(play_button.x+40,play_button.y+10))
+            pygame.time.delay(80); start_frame=(start_frame+1)%len(start_images)
 
         elif showing_loading:
-            if loading_frame < len(loading_images):
-                screen.blit(loading_images[loading_frame], (0, 0))
-                pygame.time.delay(120) #to delay loading images since it's too fast
-                loading_frame += 1
-            else:
-                showing_loading = False #close after animation
-                showing_quiz = True
+            if load_frame<len(loading_images): screen.blit(loading_images[load_frame],(0,0)); pygame.time.delay(120); load_frame+=1
+            else: showing_loading=False; showing_create=True; [b.clear() for b in boxes]
 
-        elif showing_quiz:
-            screen.blit(quiz_template, (0, 0)) #show background image
+        elif showing_create:
+            screen.blit(quiz_template,(0,0))
+            for b in boxes: b.update(); b.draw(screen)
+            if saved_msg and pygame.time.get_ticks()-save_time<2000: screen.blit(small_font.render(saved_msg,True,WHITE),(WIDTH//2-50,HEIGHT-50))
+            draw_back_and_quit()
 
-            for box in boxes:
-                box.update()
-                box.draw(screen)
 
-            if saved_message and pygame.time.get_ticks() - save_counter < 2000:
-                saved_text = small_font.render(saved_message, True, WHITE)
-                screen.blit(saved_text, (WIDTH // 2 - saved_text.get_width() // 2, HEIGHT - 50))
-            else:
-                saved_message = ''
+        elif showing_answer:
+            screen.blit(quiz_template,(0,0))
+            # plain text for question/options
+            for i in range(6): screen.blit(boxes[i].txt_surface,(boxes[i].rect.x+5,boxes[i].rect.y+5))
+            answer_input.update(); answer_input.draw(screen)
+            pygame.draw.rect(screen,WHITE,submit_button,2); screen.blit(small_font.render("Submit",True,WHITE),(submit_button.x+40,submit_button.y+10))
+            pygame.draw.rect(screen,WHITE,back_button,2); screen.blit(small_font.render("Back",True,WHITE),(back_button.x+40,back_button.y+10))
+            pygame.draw.rect(screen,WHITE,quit_button,2); screen.blit(small_font.render("Quit",True,WHITE),(quit_button.x+40,quit_button.y+10))
 
-        elif showing_exit_confirm:
-            screen.blit(exit_image, (0, 0))  # show background image
+        elif showing_result:
+            screen.blit(correct_image if is_correct else wrong_image,(0,0))
 
-        elif showing_sad:
-            screen.blit(sad_image, (0, 0))  # show background image
+        elif showing_exit_confirm: screen.blit(exit_image,(0,0))
+        elif showing_sad: screen.blit(sad_image,(0,0))
 
-        pygame.display.flip()
-        clock.tick(15)
+        pygame.display.flip(); clock.tick(15)
 
-    pygame.quit()
-    sys.exit()
+        # arm result timer once
+        if showing_result and not timer_set: pygame.time.set_timer(RESULT_TIMER,3000); timer_set=True
+        if not showing_result: timer_set=False
 
-if __name__ == "__main__":
-    main()
+if __name__ == "__main__": main()
