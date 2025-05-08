@@ -83,25 +83,25 @@ class InputBox:
 
 # Boxes for quiz creation and placeholders for loaded question
 boxes = [
-    InputBox(72,  61, 40, 40, dynamic_width=False),  # Number
-    InputBox(136, 66,200,40),                        # Question
-    InputBox(214,165,200,40),                        # A
-    InputBox(220,267,200,40),                        # B
-    InputBox(495,164,200,40),                        # C
-    InputBox(499,267,200,40),                        # D
-    InputBox(427,368, 80,40, dynamic_width=False),   # Correct Answer
+    InputBox(43,  34, 40, 40, dynamic_width=False),  # Number
+    InputBox(117, 38,200,40),                        # Question
+    InputBox(171,158,200,40),                        # A
+    InputBox(178,286,200,40),                        # B
+    InputBox(615,164,200,40),                        # C
+    InputBox(625,287,200,40),                        # D
+    InputBox(645,392, 80,40, dynamic_width=False),   # Correct Answer
 ]
-answer_input = InputBox(427,368,80,40, dynamic_width=False, editable=True)
+answer_input = InputBox(645,392,80,40, dynamic_width=False, editable=True)
 
 # Buttons
-create_button         = pygame.Rect(319, 320, 200, 50)
-play_button          = pygame.Rect(319, 390, 200, 50)
+create_button         = pygame.Rect(407, 320, 200, 50)
+play_button          = pygame.Rect(454, 390, 200, 50)
 enter_button         = pygame.Rect(201, 470, 150, 50)
-quit_button          = pygame.Rect(500, 470, 150, 50)
-submit_button        = pygame.Rect(201, 470, 150, 50)
-back_button          = pygame.Rect(500, 400, 150, 50)
+quit_button          = pygame.Rect(807, 470, 150, 50)
+submit_button        = pygame.Rect(120, 483, 150, 50)
+back_button          = pygame.Rect(469, 476, 150, 50)
 yes_button           = pygame.Rect(152, 371, 190, 65)
-no_button            = pygame.Rect(494, 371, 190, 65)
+no_button            = pygame.Rect(728, 371, 190, 65)
 
 # State flags
 showing_start        = True
@@ -164,6 +164,7 @@ def main():
                 showing_answer = True
 
             if event.type == MOUSEBUTTONDOWN:
+                print("Mouse clicked at:", event.pos)
                 # Start menu
                 if showing_start:
                     if create_button.collidepoint(event.pos):
