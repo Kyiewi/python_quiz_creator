@@ -9,9 +9,9 @@ pygame.init()
 pygame.mixer.init()
 
 #Setup Display
-WIDTH, HEIGHT = 850, 550
+WIDTH, HEIGHT = 1060, 550
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Quiz Creator")
+pygame.display.set_caption("Quiz Game")
 
 #Font
 font = pygame.font.SysFont("Courier", 25)
@@ -118,7 +118,6 @@ showing_exit_confirm = False
 showing_sad = False
 
 #Main functions
-
 def main():
     running = True
     clock = pygame.time.Clock()
