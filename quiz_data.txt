@@ -1,0 +1,79 @@
+Number:1
+Question:Why do birds suddenly appear?
+A:cause birds
+B:cause sky
+C:cause lions
+D:cause dogs
+Correct Answer:A
+Number:1
+Question:If I cooked steak what meat
+A:pork
+B:beef
+C:chicken
+D:snake
+Correct Answer:B
+Number:2
+Question:if minecraft is a game then football is a sport
+A:p->q
+B:pvq
+C:p^q
+D:p<->q
+Correct Answer:A
+Number:1
+Question:If dragon balls then oceans and engines
+A:p-->q
+B:p^q
+C:pvq
+D:p<-->q
+Correct Answer:A
+Number:2
+Question:My Sheep is not sheep or Cow is not ship
+A:~pvq
+B:~pv~q
+C:p-->q
+D:~p-->~q
+Correct Answer:B
+Number:
+Question:why do birds
+A:suddenly appear
+B:suddenly die
+C:suddenly kills
+D:suddenly eat
+Correct Answer:A
+Number:2
+Question:something about you
+A:makes me feel
+B:like a dangerous
+C:woman
+D:something about you
+Correct Answer:A
+
+Number:
+Question:if minecraft is a game then football is a sport
+A:p->q
+B:pvq
+C:p^q
+D:p<->q
+Correct Answer:A
+
+Number:
+Question:something about you
+A:makes me feel
+B:like a dangerous
+C:woman
+D:something about you
+Correct Answer:A
+Number:1
+Question:My love is mine all mine
+A:my love mine mine mine
+B:nothing in the world
+C:belongs to me
+D:my love is mine all mine
+Correct Answer:A
+Number:1
+Question:If she ate today, then she is not hungry
+A:p-->q
+B:p<-->q
+C:p-->~q
+D:pVq
+Correct Answer:C
