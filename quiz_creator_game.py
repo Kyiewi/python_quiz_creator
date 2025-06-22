@@ -141,14 +141,14 @@ def main():
                     if enter_button.collidepoint(event.pos):
                         click_sound.play()
                         #to record user input and output it as a txt file
-                        with open('quiz_data.txt', 'a') as f:
-                            f.write(f"Number:{boxes[0].text}\n")
-                            f.write(f"Question:{boxes[1].text}\n")
-                            f.write(f"A:{boxes[2].text}\n")
-                            f.write(f"B:{boxes[3].text}\n")
-                            f.write(f"C:{boxes[4].text}\n")
-                            f.write(f"D:{boxes[5].text}\n")
-                            f.write(f"Correct Answer:{boxes[6].text}\n")
+                        with open('quiz_data.txt', 'a') as file:
+                            file.write(f"Number:{boxes[0].text}\n")
+                            file.write(f"Question:{boxes[1].text}\n")
+                            file.write(f"A:{boxes[2].text}\n")
+                            file.write(f"B:{boxes[3].text}\n")
+                            file.write(f"C:{boxes[4].text}\n")
+                            file.write(f"D:{boxes[5].text}\n")
+                            file.write(f"Correct Answer:{boxes[6].text}\n")
                         saved_message = 'Saved!' #save notif for user
                         save_counter = pygame.time.get_ticks()
                         for box in boxes:

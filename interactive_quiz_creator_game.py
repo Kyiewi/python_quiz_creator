@@ -114,7 +114,7 @@ showing_result = False
 showing_loading = False
 loading_target = None  # either "create" or "play"
 
-saved_msg = ''
+saved_message = ''
 save_time  = 0
 is_correct = False
 current_question = []
@@ -123,9 +123,9 @@ timer_set = False
 # Load a random question from file
 def load_random_question():
     try:
-        with open("quiz_data.txt") as f:
-            parts = f.read().strip().split("Number:")
-            question = [p for p in parts if p.strip()]
+        with open("quiz_data.txt") as file:
+            parts = file.read().strip().split("Number:")
+            question = [part for part in parts if part.strip()]
             return random.choice(question).splitlines()
     except:
         return []
@@ -150,10 +150,10 @@ def main():
                 pygame.time.set_timer(RESULT_TIMER, 0)
                 # load next Q and display
                 current_question = load_random_question()
-                for i, line in enumerate(current_question[:6]):
+                for lines, line in enumerate(current_question[:6]):
                     if ':' in line:
                         _, val = line.split(':',1)
-                        boxes[i].set_text(val.strip())
+                        boxes[lines].set_text(val.strip())
                 answer_input.clear()
                 showing_result = False
                 showing_answer = True
@@ -179,12 +179,12 @@ def main():
                 elif showing_create:
                     if enter_button.collidepoint(event.pos):
                         click_sound.play()
-                        with open("quiz_data.txt","a") as f:
+                        with open("quiz_data.txt","a") as file:
                             for idx, label in enumerate(["Number", "Question", "A", "B", "C", "D", "Correct Answer"]):
-                                f.write(f"{label}:{boxes[idx].text}\n")
-                        saved_msg="Saved!"; save_time=pygame.time.get_ticks(); [b.clear() for b in boxes]
+                                file.write(f"{label}:{boxes[idx].text}\n")
+                        saved_message="Saved!"; save_time=pygame.time.get_ticks(); [box.clear() for box in boxes]
                     elif back_button.collidepoint(event.pos):
-                        click_sound.play(); [b.clear() for b in boxes]; showing_create=False; showing_start=True
+                        click_sound.play(); [box.clear() for box in boxes]; showing_create=False; showing_start=True
                     elif quit_button.collidepoint(event.pos):
                         click_sound.play(); showing_create=False; showing_exit_confirm=True
 
@@ -192,7 +192,7 @@ def main():
                 elif showing_answer:
                     if submit_button.collidepoint(event.pos):
                         click_sound.play()
-                        correct=next((ln.split(':',1)[1].strip() for ln in current_question if ln.startswith("Correct Answer:")),"")
+                        correct=next((ln.split(':',1)[1].strip() for line in current_question if line.startswith("Correct Answer:")),"")
                         is_correct=(answer_input.text.strip().lower()==correct.lower())
                         showing_answer=False; showing_result=True
                     elif back_button.collidepoint(event.pos):
@@ -211,7 +211,7 @@ def main():
                 pygame.quit(); sys.exit()
 
             # pass events to boxes
-            if showing_create: [b.handle_event(event) for b in boxes]
+            if showing_create: [box.handle_event(event) for box in boxes]
             if showing_answer: answer_input.handle_event(event)
 
         # Draw
@@ -229,26 +229,26 @@ def main():
                 showing_loading = False
                 if loading_target == "create":
                     showing_create = True
-                    [b.clear() for b in boxes]
+                    [box.clear() for box in boxes]
                 elif loading_target == "play":
                     current_question = load_random_question()
-                    for i, line in enumerate(current_question[:6]):
+                    for line, line in enumerate(current_question[:6]):
                         if ':' in line:
                             _, val = line.split(':', 1)
-                            boxes[i].set_text(val.strip())
+                            boxes[line].set_text(val.strip())
                     answer_input.clear()
                     showing_answer = True
                 loading_target = None
 
         elif showing_create:
             screen.blit(quiz_template,(0,0))
-            for b in boxes: b.update(); b.draw(screen)
-            if saved_msg and pygame.time.get_ticks()-save_time<2000: screen.blit(small_font.render(saved_msg,True,WHITE),(WIDTH//2-50,HEIGHT-50))
+            for box in boxes: box.update(); box.draw(screen)
+            if saved_message and pygame.time.get_ticks()-save_time<2000: screen.blit(small_font.render(saved_msg,True,WHITE),(WIDTH//2-50,HEIGHT-50))
 
         elif showing_answer:
             screen.blit(quiz_template,(0,0))
             # plain text for question/options
-            for i in range(6): screen.blit(boxes[i].txt_surface,(boxes[i].rect.x+5,boxes[i].rect.y+5))
+            for box in range(6): screen.blit(boxes[box].txt_surface,(boxes[i].rect.x+5,boxes[i].rect.y+5))
             answer_input.update(); answer_input.draw(screen)
 
         elif showing_result:
